@@ -12,7 +12,7 @@ F4.CONMSG = function(...)
     end
 end
 
-MsgC(Color(255, 0, 0), "[" .. prefix .. "]: LOADING", "\n")
+MsgC(Color(255, 0, 0), "\n[" .. prefix .. "]: LOADING", "\n")
 F4.AddFile = function(File, directory)
     local prefix = string.lower(string.Left(File, 3))
     if SERVER and prefix == "sv_" then

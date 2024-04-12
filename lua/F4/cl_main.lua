@@ -31,13 +31,14 @@ local places = {
 local ranks = {
     ["superadmin"] = Color(255,0,0)
 }
-
+ListItem = ""
 local playerMoney = {}
 
 net.Receive("beep_F4_send_richest",function()
     playerMoney = net.ReadTable()
 end)
-ListItem = ""
+
+
 function F4:CreateButton(text, img, idet, func)
 
     local option = BUi.Create("DButton", F4.sidebar)
@@ -134,7 +135,7 @@ function F4:Open()
     F4.frame:SetSize(BUi:Scale(1420),BUi:Scale(850))
     F4.frame:Center()
     F4.frame:MakePopup()
-    F4.frame:ClearPaint():Shadow(255):Background(c.light, 16)
+    F4.frame:ClearPaint():Background(c.light, 16)
     F4.frame:On("Paint", function(s, w, h)
         draw.RoundedBox(16,1,1,w-2,h-2,c.bg)
     end)
@@ -453,14 +454,7 @@ function F4:JobsTab()
         for k,v in pairs(cat.members) do
             ListItem = BUi.Create("DButton",categorygrid)
             ListItem:DockMargin(0,10,0,0)
-            ListItem:SetSize( (F4.frame:GetWide() - 320) / 2, 80 )
-            ListItem:SetupTransition("jobclick", 0.6, function(s)
-                if BUi.Doclick(s) then
-                    return math.min(s.jobclick + 10, 255) 
-                else
-                    return math.max(s.jobclick - 10, 0)  
-                end
-            end)  
+            ListItem:SetSize( (F4.frame:GetWide() - 320) / 2, 80 ) 
             ListItem:Text("")
             ListItem:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
                 BUi.masks.Start()
@@ -509,17 +503,20 @@ function F4:JobsTab()
                     ListItem.popout:Remove()
                 end
                 ListItem.popout = BUi.Create("DPanel",F4.jobtab)
-                ListItem.popout:SetSize(F4.jobtab:GetWide() * .4,F4.jobtab:GetTall())
+                ListItem.popout:SetSize(F4.jobtab:GetWide() * .4,F4.jobtab:GetTall() * .985)
                 ListItem.popout:SetPos( F4.jobtab:GetWide() * .8, 0 )
-                ListItem.popout:MoveTo(  F4.jobtab:GetWide() * .6, 0, 0.2 )
+                ListItem.popout:MoveTo(  F4.jobtab:GetWide() * .6, 10, 0.2 )
     
-                ListItem.popout:ClearPaint():FadeIn(.5):Background(c.light, 14):On("Paint", function(s, w, h)
+                ListItem.popout:ClearPaint():FadeIn(.5):Background(v.color, 8):On("Paint", function(s, w, h)
+                    draw.RoundedBox(8,1,1,w-2,h-2,c.bg)
 
 
                 end)
 
 
-           
+                local weaponscroll = BUi.Create("DPanel",ListItem.popout) 
+                weaponscroll:Stick(BOTTOM)
+                weaponscroll:ClearPaint():Background(c.light, 8)
 
                 local model = BUi.Create("DModelPanel", ListItem.popout)
                 model:SetCamPos(Vector(25, 0, 67))
@@ -528,9 +525,10 @@ function F4:JobsTab()
                 model:SetMouseInputEnabled(false)
                 model.LayoutEntity = function() end
                 local basePaint = baseclass.Get("DModelPanel").Paint
-                model:SetPos(ListItem.popout:GetWide() - model:GetWide() - 10, 10)
-                model:SetWide(ListItem.popout:GetTall() * .5)
+                model:Stick(BOTTOM)
                 model.Paint = function(s, w, h)
+                    draw.RoundedBox(8,1,1,w-2,h-2,v.color)
+                    /*
                     pixel = pixel or 1
 
                     render.ClearStencil()
@@ -557,6 +555,7 @@ function F4:JobsTab()
                 
                     render.SetStencilEnable(false)
                     render.ClearStencil()
+                    */
         
                 end
                 
