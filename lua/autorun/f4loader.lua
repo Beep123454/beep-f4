@@ -6,7 +6,7 @@ local printer = true
 
 F4.CONMSG = function(...)
     if printer then
-        MsgC(Color(8, 241, 0), "[", Color(0, 17, 255), prefix, Color(8, 241, 0), "]", Color(0, 204, 255), ..., "\n")
+        MsgC(Color(8, 241, 0), "[", Color(0, 17, 255), prefix, Color(8, 241, 0), "]", Color(255, 230, 0), ..., "\n")
     else
         return
     end
