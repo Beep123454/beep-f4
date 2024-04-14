@@ -36,6 +36,7 @@ local playerMoney = {}
 
 net.Receive("beep_F4_send_richest",function()
     playerMoney = net.ReadTable()
+    PrintTable(playerMoney)
 end)
 
 
@@ -52,7 +53,8 @@ function F4:CreateButton(text, img, idet, func)
         else
             return math.max(s.tabanim - 10, 0)  
         end
-    end)    
+    end)  
+    option:FadeHover(Color(c.light.r, c.light.g, c.light.b, 90),6,8)  
     option:On("Paint", function(s, w, h)
         if F4.CurrentTab == idet then
             draw.RoundedBox(8, 0, 0, w, h, c.accent)
@@ -85,7 +87,8 @@ function F4:CreateButton(text, img, idet, func)
         option.DoClick = func or function()
             F4:SelectPage(option.tab)
             option.tabanim = 0
-        end
+        end        
+       
 
         return option
     end)
@@ -411,265 +414,320 @@ end
 function F4:JobsTab()
     F4.jobtab = F4:CreatePage("Jobs", "EcaCkha")
 
-
     F4.jobtab.scroll = BUi.Create("BUi.Scroll",F4.jobtab)
     F4.jobtab.scroll:Stick(FILL)
     F4.jobtab.scroll:VBarSetWide(0)
 
-
-    for k, cat in pairs( DarkRP.getCategories().jobs ) do
-        if not cat.canSee( LocalPlayer() ) or #cat.members <= 0 then continue end
-        local category = BUi.Create("DCollapsibleCategory",F4.jobtab.scroll)
-        category:Stick(TOP,nil,10,10,10,0)
-        category:SetHeaderHeight(50)
-        category:ClearPaint()
-        category:SetLabel("")
-        category.Header:BUi():ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
-            BUi.masks.Start()
-            surface.SetMaterial(BUi.Grad["Right"])
-            surface.SetDrawColor(cat.color)
-            surface.DrawTexturedRect(0, 0, w, h)
-            surface.SetMaterial(BUi.Grad["Left"])
-            surface.SetDrawColor(cat.color)
-            surface.DrawTexturedRect(0, 0, w/2, h)
-            BUi.masks.Source()
-            draw.RoundedBox(8, 0, 0, w, h, c.tert)
-            BUi.masks.End()
-            draw.RoundedBox(8,1,1,w-2,h-2,c.sec)
-            draw.SimpleText(cat.name, "F4s.28",h * 1,h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-            BUi.DrawImgur(h * .4, h* .26,h * .45, h * .45, "EcaCkha", color_white)
-            BUi.DrawImgur(w - 50, h * .09, h * .9, h * .9, category:GetExpanded() and "biMVada" or "gmYCoos", color_white)
-        end)
-       category.Header:DockMargin(0,0,0,10)
-
-        local categorygrid = BUi.Create("DIconLayout",category)
-        category:SetContents(categorygrid)
-        categorygrid:Dock(FILL)
-        local spacing = 10
-        categorygrid:SetSpaceX(spacing )
-        categorygrid:SetSpaceY(spacing)
-
-        for k,v in pairs(cat.members) do
-            category.ListItem = BUi.Create("DButton",categorygrid)
-            category.ListItem:DockMargin(0,10,0,0)
-            category.ListItem:SetSize( (F4.frame:GetWide() - 320) / 2, 80 ) 
-            category.ListItem:Text("")
-            category.ListItem:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
+    function F4.jobtab.Fill()
+        F4.jobtab.scroll:Clear()
+        for k, cat in pairs(DarkRP.getCategories().jobs) do
+            local category = BUi.Create("DCollapsibleCategory", F4.jobtab.scroll)
+            category:Stick(TOP, nil, 10, 10, 10, 0)
+            category:SetHeaderHeight(50)
+            category:ClearPaint()
+            category:SetLabel("")
+            category.Header:BUi():ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
                 BUi.masks.Start()
                 surface.SetMaterial(BUi.Grad["Right"])
-                surface.SetDrawColor(v.color)
+                surface.SetDrawColor(cat.color)
                 surface.DrawTexturedRect(0, 0, w, h)
                 surface.SetMaterial(BUi.Grad["Left"])
-                surface.SetDrawColor( v.color)
+                surface.SetDrawColor(cat.color)
                 surface.DrawTexturedRect(0, 0, w/2, h)
                 BUi.masks.Source()
                 draw.RoundedBox(8, 0, 0, w, h, c.tert)
                 BUi.masks.End()
                 draw.RoundedBox(8,1,1,w-2,h-2,c.sec)
-
-                draw.RoundedBox(8,h*.1,h * .1,h*.8,h * .8,v.color)
-                draw.RoundedBox(8,h*.1 + 1,h * .1 + 1,h*.8 - 2,h * .8 - 2,c.sec)
-                BUi.masks.Start()
-                surface.SetMaterial(BUi.Grad["Down"])
-                surface.SetDrawColor(v.color)
-                surface.DrawTexturedRect(0,0,w,h)
-                BUi.masks.Source()
-                draw.RoundedBox(4,h*.1 + 1,h * .1 + 1,h*.8 - 2,h * .8 - 2,c.sec)
-                BUi.masks.End()
-
-                draw.RoundedBox(4,h*.9 + 10,h * .55 + 1,h * 5.7,h * .3,c.light)
-                draw.RoundedBox(4,h*.9 + 11,h * .55 + 2,h * 5.7 - 2,h * .3 -2,c.sec)
-                BUi.masks.Start()
-                surface.SetMaterial(BUi.Grad["Right"])
-                surface.SetDrawColor(v.color)
-                surface.DrawTexturedRect(0, 0, w, h)
-
-                BUi.masks.Source()
-                draw.RoundedBox(4,h*.9 + 11,h * .55 + 2,h * 5.7 - 2,h * .3 -2,c.sec)
-                BUi.masks.End()
-
-                draw.SimpleText(v.name, "F4s.25",h * 1,h/3, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                if v.max > 0 then
-                    draw.SimpleText(team.NumPlayers( v.team  ) .. "/" .. v.max or 0, "F4.22",w/1.8,h * .7, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                else
-                    draw.SimpleText(team.NumPlayers( v.team  ) .. "/∞", "F4.22",w/1.8,h * .7, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                end
+                draw.SimpleText(cat.name, "F4s.28",h * 1,h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                BUi.DrawImgur(h * .4, h* .26,h * .45, h * .45, "EcaCkha", color_white)
+                BUi.DrawImgur(w - 50, h * .09, h * .9, h * .9, category:GetExpanded() and "biMVada" or "gmYCoos", color_white)
             end)
+            category.Header:DockMargin(0,0,0,10)
 
-            category.ListItem:On("DoClick", function(s, w, h)
-                if IsValid(category.ListItem.popout) then
-                    category.ListItem.popout:Remove()
+            local categorygrid = BUi.Create("DIconLayout",category)
+            category:SetContents(categorygrid)
+            categorygrid:Dock(FILL)
+            local spacing = 10
+            categorygrid:SetSpaceX(spacing)
+            categorygrid:SetSpaceY(spacing)
+
+            for k,v in pairs(cat.members) do
+                if (F4.search:GetValue() ~= "" and not string.find(string.lower(v.name), string.lower(F4.search:GetValue()))) then
+                    continue
                 end
-
-                category.holder = BUi.Create("DButton",F4.jobtab)
-                category.holder:FadeIn(.5)
-                category.holder:Dock(FILL,nil,nil,100)
-                category.holder:Text("")
-                category.holder:ClearPaint():On("Paint", function(s, w, h)
-                    draw.RoundedBox(8,1,1,w-2,h-2,Color(0,0,0,130))
-                    
-                end):On("DoClick", function(s)
-                    category.ListItem.popout:Remove()
-                    s:Remove()
-                end):Blur()
-
-                category.ListItem.popout = BUi.Create("DPanel", category.holder)
-                category.ListItem.popout:SetSize(F4.jobtab:GetWide() * .35,F4.jobtab:GetTall() * .985)
-                category.ListItem.popout:SetPos( F4.jobtab:GetWide() * .8, 0 )
-                category.ListItem.popout:MoveTo(  F4.jobtab:GetWide() * .65, 10, 0.2 )
-                category.ListItem.popout:DockPadding(40,40,40,40)
-                
-
-                category.ListItem.popout:ClearPaint():FadeIn(.5):Background(v.color, 8):On("Paint", function(s, w, h)
-                    draw.RoundedBox(8,1,1,w-2,h-2,c.bg)
-
+                category.ListItem = BUi.Create("DButton",categorygrid)
+                category.ListItem:DockMargin(0,10,0,0)
+                category.ListItem:SetSize((F4.frame:GetWide() - 320) / 2, 80) 
+                category.ListItem:Text("")
+                local todraw = math.Min(team.NumPlayers(v.team) / v.max, 1)
+                local lerpc =  0
+                category.ListItem:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
                     BUi.masks.Start()
-                    surface.SetMaterial(BUi.Grad["Up"])
+                    surface.SetMaterial(BUi.Grad["Right"])
+                    surface.SetDrawColor(v.color)
+                    surface.DrawTexturedRect(0, 0, w, h)
+                    surface.SetMaterial(BUi.Grad["Left"])
+                    surface.SetDrawColor(v.color)
+                    surface.DrawTexturedRect(0, 0, w/2, h)
+                    BUi.masks.Source()
+                    draw.RoundedBox(8, 0, 0, w, h, c.tert)
+                    BUi.masks.End()
+                    draw.RoundedBox(8,1,1,w-2,h-2,c.sec)
+
+                    draw.RoundedBox(8,h*.1,h * .1,h*.8,h * .8,v.color)
+                    draw.RoundedBox(8,h*.1 + 1,h * .1 + 1,h*.8 - 2,h * .8 - 2,c.sec)
+                    BUi.masks.Start()
+                    surface.SetMaterial(BUi.Grad["Down"])
                     surface.SetDrawColor(v.color)
                     surface.DrawTexturedRect(0,0,w,h)
                     BUi.masks.Source()
-                    draw.RoundedBox(8,0,0,w,h,c.sec)
+                    draw.RoundedBox(4,h*.1 + 1,h * .1 + 1,h*.8 - 2,h * .8 - 2,c.sec)
                     BUi.masks.End()
 
-                    draw.SimpleText(v.name, "F4b.35",w /2,h * .33, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    draw.RoundedBox(4,h*.9 + 10,h * .55 + 1,h * 5.7,h * .3,c.light)
+                    draw.RoundedBox(4,h*.9 + 11,h * .55 + 2,h * 5.7 - 2,h * .3 -2,c.sec)
+                    BUi.masks.Start()
+                    surface.SetMaterial(BUi.Grad["Right"])
+                    surface.SetDrawColor(v.color)
+                    surface.DrawTexturedRect(0, 0, w, h)
 
-                    draw.SimpleText("Salary: $"  .. v.salary, "F4s.25",w /2,h * .37, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    
+                    BUi.masks.Source()
+                    lerpc = Lerp(FrameTime() * 4, lerpc, team.NumPlayers(v.team))
+                    local count = math.Clamp(lerpc / (v.max == 0 and 1 or v.max), 0, 1)
+                    draw.RoundedBox(4,h*.9 + 11,h * .55 + 2,(h * 5.7 - 2) * count,h * .3 -2,c.sec)
+                    BUi.masks.End()
 
-                end)
+                    draw.SimpleText(v.name, "F4s.25",h * 1,h/3, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    if v.max > 0 then
+                        draw.SimpleText(team.NumPlayers(v.team) .. "/" .. v.max or 0, "F4.22",w/1.8,h * .7, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    else
+                        draw.SimpleText(team.NumPlayers(v.team) .. "/∞", "F4.22",w/1.8,h * .7, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    end
+                end):CircleClick()
 
-                local description = BUi.Create("DPanel",category.ListItem.popout) 
-                description:Stick(BOTTOM,nil,nil,10)
-                description:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
-                    draw.RoundedBox(8,1,1,w-2,h-2,c.bg)
+                category.ListItem:On("DoClick", function(s, w, h)
+                    if IsValid(category.ListItem.popout) then
+                        category.ListItem.popout:Remove()
+                    end
 
-                    draw.RoundedBox(0,0,h/12,w,1,c.light)
-                    draw.RoundedBoxEx(8,1,1,w-2,h/12.4,c.accent,true,true,false,false)
-                    draw.SimpleText( "Description", "F4s.20",h * .03,20, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                end)
-                description:DockPadding(5,0,0,10)
+                    category.holder = BUi.Create("DButton",F4.jobtab)
+                    category.holder:FadeIn(.5)
+                    category.holder:Dock(FILL,nil,nil,100)
+                    category.holder:Text("")
+                    category.holder:ClearPaint():On("Paint", function(s, w, h)
+                        draw.RoundedBox(8,1,1,w-2,h-2,Color(0,0,0,130))
+                        
+                    end):On("DoClick", function(s)
+                        category.ListItem.popout:Remove()
+                        s:Remove()
+                    end):Blur()
+                    F4.search.OnChange = function()
+                        F4.jobtab.Fill()
+                        if IsValid(category.holder) then
+                            category.holder:Remove()
+                        end
+                    end
 
-                local scroll = BUi.Create("BUi.Scroll",description)
-                scroll:Stick(FILL,nil,nil,36)
-                
-        
-              
-                local item = BUi.Create("DLabel",scroll)
-                item:SetWrap(true)
-                item:SetAutoStretchVertical(true)
-                item:Stick(TOP,2)
-                item:SetTall(description:GetTall() * 1.5)
-                item:SetText(v.description:gsub("\n%s*", "\n"))
-                item:SetFont("F4b.20")
-                item:SetTextColor(color_white)
+                    category.ListItem.popout = BUi.Create("DPanel", category.holder)
+                    category.ListItem.popout:SetSize(F4.jobtab:GetWide() * .35,F4.jobtab:GetTall() * .985)
+                    category.ListItem.popout:SetPos(F4.jobtab:GetWide() * .8, 0)
+                    category.ListItem.popout:MoveTo(F4.jobtab:GetWide() * .65, 10, 0.2)
+                    category.ListItem.popout:DockPadding(40,40,40,40)
+                    
 
-                for k,v in pairs(v.weapons) do
-                    wep = BUi.Create("DPanel",scroll)
-                    wep:Stick(TOP,5)
-                    wep:SetTall(50)
-                    wep:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
+                    category.ListItem.popout:ClearPaint():FadeIn(.5):Background(v.color, 8):On("Paint", function(s, w, h)
                         draw.RoundedBox(8,1,1,w-2,h-2,c.bg)
-                        draw.SimpleText(  weapons.Get(v) and weapons.Get(v).PrintName or "Unkown", "F4s.20",w * .2,h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+
+
+                        draw.SimpleText(v.name, "F4b.35",w / 2,h * .35, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
+                        draw.SimpleText("Salary: $" .. v.salary, "F4s.20",w / 2,h * .38, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        
+
                     end)
 
-                    wepmodel = BUi.Create("ModelImage",wep)
-                    wepmodel:Dock(LEFT,5)
-                    wepmodel:SetWide(50)
+                    local description = BUi.Create("DPanel",category.ListItem.popout) 
+                    description:Stick(BOTTOM,nil,nil,10)
+                    description:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
+                        draw.RoundedBox(8,1,1,w-2,h-2,c.bg)
+
+                        draw.RoundedBox(0,0,h/12,w,1,c.light)
+                        draw.RoundedBoxEx(8,1,1,w-2,h/12.4,c.accent,true,true,false,false)
+                        draw.SimpleText("Description", "F4s.20",h * .015,20, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    end)
+                    description:DockPadding(5,0,0,10)
+
+                    local scroll = BUi.Create("BUi.Scroll",description)
+                    scroll:Stick(FILL,nil,nil,36)
                     
-                    model = weapons.Get(v) and weapons.Get(v).WorldModel or "error.model"
-                    wepmodel:SetModel(model)
+            
+                  
+                    local item = BUi.Create("DLabel",scroll)
+                    item:SetWrap(true)
+                    item:SetAutoStretchVertical(true)
+                    item:Stick(TOP,2)
+                    item:SetTall(description:GetTall() * 1.5)
+                    item:SetText(v.description:gsub("\n%s*", "\n"))
+                    item:SetFont("F4b.20")
+                    item:SetTextColor(color_white)
+
+                    for k,v in pairs(v.weapons) do
+                        local wep = BUi.Create("DPanel",scroll)
+                        wep:Stick(TOP,5)
+                        wep:SetTall(50)
+                        wep:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
+                            draw.RoundedBox(8,1,1,w-2,h-2,c.bg)
+                            draw.SimpleText(weapons.Get(v) and weapons.Get(v).PrintName or "Unknown", "F4s.20",w * .2,h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        end)
+
+                        local wepmodel = BUi.Create("ModelImage",wep)
+                        wepmodel:Dock(LEFT,5)
+                        wepmodel:SetWide(50)
+                        
+                        local model = weapons.Get(v) and weapons.Get(v).WorldModel or "error.model"
+                        wepmodel:SetModel(model)
+                        
+                       
+                    end
+
+
+                    description:SetTall(category.ListItem.popout:GetWide() * 1)
+
+                    local become = BUi.Create("DButton",description) 
+                    become:SetTall(50)
+                    become:Stick(BOTTOM,10):ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
+                        draw.RoundedBox(8,1,1,w-2,h-2,c.bg)
+                        draw.SimpleText(v.vote and "Vote" or "Become", "F4s.25",w /2,h /2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    end)
+                    become:FadeHover(Color(v.color.r,v.color.g,v.color.b,30),6,8)
+                    become:Text("")
+
+
+                    local model = BUi.Create("DModelPanel",category.ListItem.popout)
+                    model:Stick(BOTTOM,nil,nil,nil,nil,60)
+                    model:ClearPaint()
+                    model:SetTall(category.ListItem.popout:GetWide() * .5)
+                    model:SetCamPos(Vector(25, 0, 67))
+                    model:SetLookAt(Vector(0, 0, 65))
+                    model:SetFOV(60)
+                    model:SetMouseInputEnabled(true)
+                    model.LayoutEntity = function() end
+                    local basePaint = baseclass.Get("DModelPanel").Paint
+                    model:SetWide(category.ListItem.popout:GetWide() * .5)
+                    model:SetTall(category.ListItem.popout:GetWide() * .5)
+                    model.Paint = function(s, w, h)
+
+                        local pixel = 1
+                        render.ClearStencil()
+                        render.SetStencilEnable(true)
                     
-                   
-                end
+                        render.SetStencilWriteMask(1)
+                        render.SetStencilTestMask(1)
+                    
+                        render.SetStencilFailOperation(STENCILOPERATION_REPLACE)
+                        render.SetStencilPassOperation(STENCILOPERATION_KEEP)
+                        render.SetStencilZFailOperation(STENCILOPERATION_KEEP)
+                        render.SetStencilCompareFunction(STENCILCOMPARISONFUNCTION_NEVER)
+                        render.SetStencilReferenceValue(pixel)
+
+                        BUi.DrawCircle(w/2, h/2, 90, c.bg)
+                        
+                    
+                        render.SetStencilFailOperation(STENCILOPERATION_KEEP)
+                        render.SetStencilPassOperation(STENCILOPERATION_REPLACE)
+                        render.SetStencilZFailOperation(STENCILOPERATION_KEEP)
+                        render.SetStencilCompareFunction(STENCILCOMPARISONFUNCTION_EQUAL)
+                        render.SetStencilReferenceValue(pixel)
 
 
+                        surface.SetMaterial(BUi.Grad["Up"])
+                        surface.SetDrawColor(v.color)
+                        surface.DrawTexturedRect(0,0,w,h)
+                        basePaint(s, w, h)
+                    
+                        render.SetStencilEnable(false)
+                        render.ClearStencil()
+                        
+            
+                    end
 
+                    if istable(v.model) then
+                        model:SetModel(v.model[1])
+                    else
+                        model:SetModel(v.model)
+                    end
+                    
 
-                description:SetTall( category.ListItem.popout:GetWide() * 1)
+                    local count = 1
 
-                local become = BUi.Create("DButton",description) 
-                become:SetTall( 50)
-                become:Text("")
-                become:Stick(BOTTOM,10):ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
-                    draw.RoundedBox(8,1,1,w-2,h-2,c.bg)
-                    draw.SimpleText(v.vote and "Vote" or "Become", "F4s.25",w /2,h /2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    local leftbutton = BUi.Create("DButton",model)
+                    leftbutton:Stick(LEFT)
+                    leftbutton:Text("")
+                    leftbutton:SetWide(model:GetWide() * .5)
+                    leftbutton:ClearPaint():On("Paint",function(s,w,h)
+                        BUi.DrawImgurRotated(h * .15,h* .5,w, h * .5,180,"Dy4zhm7",s:IsHovered() and v.color or color_white)
+                    end):On("DoClick",function(s)
+                        if count == 1 then 
+                            count = #v.model
+                        else
+                            count = count - 1
+                        end
+
+                        if istable(v.model) then
+                            model:SetModel(v.model[count])
+                        else
+                            model:SetModel(v.model)
+                        end    
+                    end)
+
+                    local rightbutton = BUi.Create("DButton",model)
+                    rightbutton:Stick(RIGHT)
+                    rightbutton:Text("")
+                    rightbutton:SetWide(model:GetWide() * .5)
+                    rightbutton:ClearPaint():On("Paint",function(s,w,h)
+                        BUi.DrawImgur(h *.09,h* .3,w, h * .5,"Dy4zhm7",s:IsHovered() and v.color or color_white)
+                    end):On("DoClick",function(s)
+                        if count == #v.model then 
+                            count = 1
+                        else
+                            count = count + 1
+                        end
+                        if istable(v.model) then
+                            model:SetModel(v.model[count])
+                        else
+                            model:SetModel(v.model)
+                        end
+                        
+                    end)
+
+                    become:On("DoClick",function(s)
+                        LocalPlayer():ConCommand(v.vote and "say /vote" .. v.command or "say /" .. v.command)
+                        DarkRP.setPreferredJobModel(v.team, model:GetModel())
+                    end)
+                    become:CircleClick()
+
                 end)
-                become:FadeHover( Color(v.color.r,v.color.g,v.color.b,30),6,8)
-                become:On("DoClick",function(s)
-                    LocalPlayer():ConCommand(v.vote and "say /vote" .. v.command or "say /" .. v.command)
-                end)
-                become:CircleClick()
 
+                local model = BUi.Create("ModelImage",category.ListItem) 
+                model:Stick(LEFT, 10)
+                model:SetWide(category.ListItem:GetTall() * .8)
 
-                local model = BUi.Create("DModelPanel",category.ListItem.popout)
-                model:Stick(BOTTOM,nil,nil,nil,nil,60)
-                model:ClearPaint()
-                model:SetTall( category.ListItem.popout:GetWide() * .5)
-                model:SetCamPos(Vector(25, 0, 67))
-                model:SetLookAt(Vector(0, 0, 65))
-                model:SetFOV(60)
-                model:SetMouseInputEnabled(false)
-                model.LayoutEntity = function() end
-                local basePaint = baseclass.Get("DModelPanel").Paint
-                model:SetWide(category.ListItem.popout:GetWide() * .5)
-                model:SetTall( category.ListItem.popout:GetWide() * .5)
-                model.Paint = function(s, w, h)
-
-                    pixel = pixel or 1
-                    render.ClearStencil()
-                    render.SetStencilEnable(true)
-                
-                    render.SetStencilWriteMask(1)
-                    render.SetStencilTestMask(1)
-                
-                    render.SetStencilFailOperation(STENCILOPERATION_REPLACE)
-                    render.SetStencilPassOperation(STENCILOPERATION_KEEP)
-                    render.SetStencilZFailOperation(STENCILOPERATION_KEEP)
-                    render.SetStencilCompareFunction(STENCILCOMPARISONFUNCTION_NEVER)
-                    render.SetStencilReferenceValue(pixel)
-                    
-                    BUi.DrawCircle(w/2, h /2, 90, color_white)
-                
-                    render.SetStencilFailOperation(STENCILOPERATION_KEEP)
-                    render.SetStencilPassOperation(STENCILOPERATION_REPLACE)
-                    render.SetStencilZFailOperation(STENCILOPERATION_KEEP)
-                    render.SetStencilCompareFunction(STENCILCOMPARISONFUNCTION_EQUAL)
-                    render.SetStencilReferenceValue(pixel)
-
-
-                    surface.SetMaterial(BUi.Grad["Up"])
-                    surface.SetDrawColor(c.bg)
-                    surface.DrawTexturedRect(0,0,w,h)
-                    basePaint(s, w, h)
-                
-                    render.SetStencilEnable(false)
-                    render.ClearStencil()
-                    
-        
-                end
-                
                 if istable(v.model) then
                     model:SetModel(v.model[1])
                 else
                     model:SetModel(v.model)
                 end
-                
-            end)
-
-            local model = BUi.Create("ModelImage",category.ListItem) 
-            model:Stick(LEFT, 10)
-            model:SetWide(category.ListItem:GetTall() * .8)
-
-            if istable( v.model )  then
-                model:SetModel( v.model[1] )
-            else
-                model:SetModel( v.model )
             end
         end
-
     end
 
+    F4.search.OnChange = function()
+        F4.jobtab.Fill()
+    end
+    F4.jobtab.Fill()
+        
 end
+
 hook.Add( "ShowSpare2", "aw", function( ply ) 
     F4:Open()
 end )

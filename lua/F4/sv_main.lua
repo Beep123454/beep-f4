@@ -1,4 +1,4 @@
-util.AddNetworkString("beep_Z_INV_send_richest")
+util.AddNetworkString("beep_F4_send_richest")
 
 local function getMoney()
     local money = MySQLite.query("SELECT DISTINCT * FROM darkrp_player ORDER BY wallet DESC LIMIT 20")
@@ -29,14 +29,13 @@ end
 
 
 local function sendinfo(ply, leader)
-    net.Start("beep_Z_INV_send_richest")
+    net.Start("beep_F4_send_richest")
     net.WriteTable(leader)
     net.Send(ply)
 end
 
-timer.Create("Z_INV.Timer", 120, 0, function()
+timer.Create("beep_F4.Timer", 120, 0, function()
     local total = getMoney()
-    
     for _, v in ipairs(player.GetHumans()) do
         if not IsValid(v) then continue end
         sendinfo(v, total)
