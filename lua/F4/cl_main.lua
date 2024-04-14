@@ -419,12 +419,12 @@ function F4:JobsTab()
 
     for k, cat in pairs( DarkRP.getCategories().jobs ) do
         if not cat.canSee( LocalPlayer() ) or #cat.members <= 0 then continue end
-        F4.jobtab.category = BUi.Create("DCollapsibleCategory",F4.jobtab.scroll)
-        F4.jobtab.category:Stick(TOP,nil,10,10,10,0)
-        F4.jobtab.category:SetHeaderHeight(50)
-        F4.jobtab.category:ClearPaint()
-        F4.jobtab.category:SetLabel("")
-        F4.jobtab.category.Header:BUi():ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
+        local category = BUi.Create("DCollapsibleCategory",F4.jobtab.scroll)
+        category:Stick(TOP,nil,10,10,10,0)
+        category:SetHeaderHeight(50)
+        category:ClearPaint()
+        category:SetLabel("")
+        category.Header:BUi():ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
             BUi.masks.Start()
             surface.SetMaterial(BUi.Grad["Right"])
             surface.SetDrawColor(cat.color)
@@ -438,23 +438,23 @@ function F4:JobsTab()
             draw.RoundedBox(8,1,1,w-2,h-2,c.sec)
             draw.SimpleText(cat.name, "F4s.28",h * 1,h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             BUi.DrawImgur(h * .4, h* .26,h * .45, h * .45, "EcaCkha", color_white)
-            BUi.DrawImgur(w - 50, h * .09, h * .9, h * .9, F4.jobtab.category:GetExpanded() and "biMVada" or "gmYCoos", color_white)
+            BUi.DrawImgur(w - 50, h * .09, h * .9, h * .9, category:GetExpanded() and "biMVada" or "gmYCoos", color_white)
         end)
-        F4.jobtab.category.Header:DockMargin(0,0,0,10)
+       category.Header:DockMargin(0,0,0,10)
 
-        F4.jobtab.categorygrid = BUi.Create("DIconLayout",F4.jobtab.category)
-        F4.jobtab.category:SetContents(F4.jobtab.categorygrid)
-        F4.jobtab.categorygrid:Dock(FILL)
+        local categorygrid = BUi.Create("DIconLayout",category)
+        category:SetContents(categorygrid)
+        categorygrid:Dock(FILL)
         local spacing = 10
-        F4.jobtab.categorygrid:SetSpaceX(spacing )
-        F4.jobtab.categorygrid:SetSpaceY(spacing)
+        categorygrid:SetSpaceX(spacing )
+        categorygrid:SetSpaceY(spacing)
 
         for k,v in pairs(cat.members) do
-            F4.jobtab.category.ListItem = BUi.Create("DButton",F4.jobtab.categorygrid)
-            F4.jobtab.category.ListItem:DockMargin(0,10,0,0)
-            F4.jobtab.category.ListItem:SetSize( (F4.frame:GetWide() - 320) / 2, 80 ) 
-            F4.jobtab.category.ListItem:Text("")
-            F4.jobtab.category.ListItem:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
+            category.ListItem = BUi.Create("DButton",categorygrid)
+            category.ListItem:DockMargin(0,10,0,0)
+            category.ListItem:SetSize( (F4.frame:GetWide() - 320) / 2, 80 ) 
+            category.ListItem:Text("")
+            category.ListItem:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
                 BUi.masks.Start()
                 surface.SetMaterial(BUi.Grad["Right"])
                 surface.SetDrawColor(v.color)
@@ -496,35 +496,40 @@ function F4:JobsTab()
                 end
             end)
 
-            F4.jobtab.category.ListItem:On("DoClick", function(s, w, h)
-                if IsValid(F4.jobtab.category.ListItem.popout) then
-                    F4.jobtab.category.ListItem.popout:Remove()
+            category.ListItem:On("DoClick", function(s, w, h)
+                if IsValid(category.ListItem.popout) then
+                    category.ListItem.popout:Remove()
                 end
 
-                F4.jobtab.category.holder = BUi.Create("DButton",F4.jobtab)
-                F4.jobtab.category.holder:FadeIn(.5)
-                F4.jobtab.category.holder:Dock(FILL,nil,nil,100)
-                F4.jobtab.category.holder:Text("")
-                F4.jobtab.category.holder:ClearPaint():On("Paint", function(s, w, h)
+                category.holder = BUi.Create("DButton",F4.jobtab)
+                category.holder:FadeIn(.5)
+                category.holder:Dock(FILL,nil,nil,100)
+                category.holder:Text("")
+                category.holder:ClearPaint():On("Paint", function(s, w, h)
                     draw.RoundedBox(8,1,1,w-2,h-2,Color(0,0,0,130))
                     
                 end):On("DoClick", function(s)
-
-                    F4.jobtab.category.ListItem.popout:Remove()
+                    category.ListItem.popout:Remove()
                     s:Remove()
                 end):Blur()
 
-                F4.jobtab.category.ListItem.popout = BUi.Create("DPanel", F4.jobtab.category.holder)
-                F4.jobtab.category.ListItem.popout:SetSize(F4.jobtab:GetWide() * .35,F4.jobtab:GetTall() * .985)
-                F4.jobtab.category.ListItem.popout:SetPos( F4.jobtab:GetWide() * .8, 0 )
-                F4.jobtab.category.ListItem.popout:MoveTo(  F4.jobtab:GetWide() * .65, 10, 0.2 )
-                F4.jobtab.category.ListItem.popout:DockPadding(40,40,40,40)
+                category.ListItem.popout = BUi.Create("DPanel", category.holder)
+                category.ListItem.popout:SetSize(F4.jobtab:GetWide() * .35,F4.jobtab:GetTall() * .985)
+                category.ListItem.popout:SetPos( F4.jobtab:GetWide() * .8, 0 )
+                category.ListItem.popout:MoveTo(  F4.jobtab:GetWide() * .65, 10, 0.2 )
+                category.ListItem.popout:DockPadding(40,40,40,40)
                 
 
-                F4.jobtab.category.ListItem.popout:ClearPaint():FadeIn(.5):Background(v.color, 8):On("Paint", function(s, w, h)
+                category.ListItem.popout:ClearPaint():FadeIn(.5):Background(v.color, 8):On("Paint", function(s, w, h)
                     draw.RoundedBox(8,1,1,w-2,h-2,c.bg)
 
-                    BUi.DrawImgur(0, 0,w, h , "FckxXtX", v.color,8)
+                    BUi.masks.Start()
+                    surface.SetMaterial(BUi.Grad["Up"])
+                    surface.SetDrawColor(v.color)
+                    surface.DrawTexturedRect(0,0,w,h)
+                    BUi.masks.Source()
+                    draw.RoundedBox(8,0,0,w,h,c.sec)
+                    BUi.masks.End()
 
                     draw.SimpleText(v.name, "F4b.35",w /2,h * .33, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
@@ -533,7 +538,7 @@ function F4:JobsTab()
 
                 end)
 
-                local description = BUi.Create("DPanel",F4.jobtab.category.ListItem.popout) 
+                local description = BUi.Create("DPanel",category.ListItem.popout) 
                 description:Stick(BOTTOM,nil,nil,10)
                 description:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
                     draw.RoundedBox(8,1,1,w-2,h-2,c.bg)
@@ -549,7 +554,7 @@ function F4:JobsTab()
                 
         
               
-                item = BUi.Create("DLabel",scroll)
+                local item = BUi.Create("DLabel",scroll)
                 item:SetWrap(true)
                 item:SetAutoStretchVertical(true)
                 item:Stick(TOP,2)
@@ -580,12 +585,12 @@ function F4:JobsTab()
 
 
 
-                description:SetTall( F4.jobtab.category.ListItem.popout:GetWide() * 1)
+                description:SetTall( category.ListItem.popout:GetWide() * 1)
 
                 local become = BUi.Create("DButton",description) 
                 become:SetTall( 50)
                 become:Text("")
-                become:Stick(BOTTOM,10):ClearPaint():Background(v.color, 8):On("Paint", function(s, w, h)
+                become:Stick(BOTTOM,10):ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
                     draw.RoundedBox(8,1,1,w-2,h-2,c.bg)
                     draw.SimpleText(v.vote and "Vote" or "Become", "F4s.25",w /2,h /2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 end)
@@ -593,20 +598,21 @@ function F4:JobsTab()
                 become:On("DoClick",function(s)
                     LocalPlayer():ConCommand(v.vote and "say /vote" .. v.command or "say /" .. v.command)
                 end)
+                become:CircleClick()
 
 
-                local model = BUi.Create("DModelPanel",F4.jobtab.category.ListItem.popout)
+                local model = BUi.Create("DModelPanel",category.ListItem.popout)
                 model:Stick(BOTTOM,nil,nil,nil,nil,60)
                 model:ClearPaint()
-                model:SetTall( F4.jobtab.category.ListItem.popout:GetWide() * .5)
+                model:SetTall( category.ListItem.popout:GetWide() * .5)
                 model:SetCamPos(Vector(25, 0, 67))
                 model:SetLookAt(Vector(0, 0, 65))
                 model:SetFOV(60)
                 model:SetMouseInputEnabled(false)
                 model.LayoutEntity = function() end
                 local basePaint = baseclass.Get("DModelPanel").Paint
-                model:SetWide(F4.jobtab.category.ListItem.popout:GetWide() * .5)
-                model:SetTall( F4.jobtab.category.ListItem.popout:GetWide() * .5)
+                model:SetWide(category.ListItem.popout:GetWide() * .5)
+                model:SetTall( category.ListItem.popout:GetWide() * .5)
                 model.Paint = function(s, w, h)
 
                     pixel = pixel or 1
@@ -631,8 +637,8 @@ function F4:JobsTab()
                     render.SetStencilReferenceValue(pixel)
 
 
-                    surface.SetMaterial(BUi.Grad["Down"])
-                    surface.SetDrawColor(Color(v.color.r,v.color.g,v.color.b,25))
+                    surface.SetMaterial(BUi.Grad["Up"])
+                    surface.SetDrawColor(c.bg)
                     surface.DrawTexturedRect(0,0,w,h)
                     basePaint(s, w, h)
                 
@@ -650,9 +656,9 @@ function F4:JobsTab()
                 
             end)
 
-            local model = BUi.Create("ModelImage",F4.jobtab.category.ListItem) 
+            local model = BUi.Create("ModelImage",category.ListItem) 
             model:Stick(LEFT, 10)
-            model:SetWide(F4.jobtab.category.ListItem:GetTall() * .8)
+            model:SetWide(category.ListItem:GetTall() * .8)
 
             if istable( v.model )  then
                 model:SetModel( v.model[1] )
