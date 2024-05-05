@@ -43,7 +43,7 @@ timer.Create("beep_F4.Timer", 120, 0, function()
 
 end)
 
-hook.Add("PlayerSpawn", "Eternal.Z_INV.SendTotalMoney.Spawn", function(ply)
+hook.Add("PlayerSpawn", "SendTotalMoney.Spawn", function(ply)
     if ply.totalmoneyspawn then return end
     ply.totalmoneyspawn = true
     local total = getMoney()

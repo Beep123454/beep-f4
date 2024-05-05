@@ -36,7 +36,6 @@ local playerMoney = {}
 
 net.Receive("beep_F4_send_richest",function()
     playerMoney = net.ReadTable()
-    PrintTable(playerMoney)
 end)
 
 
@@ -165,6 +164,27 @@ function F4:Open()
         draw.RoundedBox(14,1,1,w-2,h-2,c.sec)
     end)
 
+
+    F4.topbar.name = BUi.Create("DButton", F4.topbar)
+    F4.topbar.name:Stick(RIGHT, nil,nil,15,10,15)
+    F4.topbar.name:Text("")
+    F4.topbar.name:ClearPaint():Background(c.light):On("Paint", function(s, w, h)
+        draw.RoundedBox(0, 2, 0, w , h, c.sec)
+        local name = LocalPlayer():Name():gsub("^%l", string.upper)
+        local textWidth, _ = surface.GetTextSize(name)
+        draw.SimpleText(BUi.Truncate(name,20), "F4s.25", h * 0.3, h / 2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        F4.topbar.name:SetWide(textWidth + 10)
+    end)
+    F4.topbar.name:SetOpenURL("https://steamcommunity.com/profiles/" .. LocalPlayer():SteamID64())
+    
+
+    F4.topbar.avatar = BUi.Create("DPanel",F4.topbar)
+    F4.topbar.avatar:Stick(RIGHT,12)
+    F4.topbar.avatar:SetWide(  F4.topbar:GetTall() - 24)
+    F4.topbar.avatar:CircleAvatar()
+    F4.topbar.avatar:SetPlayer(LocalPlayer(),184)
+
+
     F4.page = BUi.Create("DPanel",  F4.sidebar)
     F4.page:Stick(TOP)
     F4.page:SetTall(F4.sidebar:GetTall() * .08)
@@ -172,7 +192,7 @@ function F4:Open()
         draw.RoundedBoxEx(8,1,1,w-2,h-2,c.accent,true,true,false,false)
         draw.SimpleText( "Meta Roleplay", "F4b.25",h,h/3, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         draw.SimpleText( "The best server", "F4.22",h,h/1.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-        BUi.DrawProgressWheel(h * .1, h * .1,h * .8 ,h * .8,color_white)
+        BUi.DrawImgur(h * .1, h * .1,h * .8 ,h * .8,"69PK8mX",color_white)
     end)
 
     F4.searchhold = BUi.Create("DPanel",  F4.topbar)
@@ -195,6 +215,14 @@ function F4:Open()
 
     F4:Dashboard()
     F4:JobsTab()
+    F4:EntTab()
+    F4:WepTab()
+
+    F4.search.OnChange = function()
+        F4.jobtab.Fill()
+        F4.EntitiesTab.Fill()
+        F4.WepaonsTab.Fill()
+    end
 
 end
 
@@ -241,7 +269,7 @@ function F4:Dashboard()
             end
 
             draw.RoundedBox(8,1,1,w-2,h-2,c.sec)
-            draw.SimpleText(v.rpname .. " | " .. BUi:FormatMoney(tonumber(v.wallet)), "F4s.25",h * 1.2,h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText(BUi.Truncate(v.rpname,20) .. " | " .. BUi:FormatMoney(tonumber(v.wallet)), "F4s.25",h * 1,h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end)
 
         F4.dash.right.leader.avatar = BUi.Create("DPanel",F4.dash.right.leader.player)
@@ -274,8 +302,8 @@ function F4:Dashboard()
                 F4.dash.right.staff.player:SetTall(F4.dash.right.staff:GetTall() * .12)
                 F4.dash.right.staff.player:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
                     draw.RoundedBox(8,1,1,w-2,h-2,c.sec)
-                    draw.SimpleText(ply:Name(), "F4s.25",h * 1.2,h/3.4, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                    draw.SimpleText(ply:GetUserGroup(), "F4.25",h * 1.2,h/1.5, v, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(ply:Name(), "F4s.25",h * 1,h/3.4, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(ply:GetUserGroup(), "F4.25",h * 1,h/1.5, v, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 end)
         
                 F4.dash.right.staff.avatar = BUi.Create("DPanel",F4.dash.right.staff.player)
@@ -295,7 +323,7 @@ function F4:Dashboard()
         draw.RoundedBox(14,1,1,w-2,h-2,c.sec)
         draw.RoundedBox(0,0,h/12,w,1,c.light)
         draw.RoundedBoxEx(14,1,1,w-2,h/12.4,c.accent,true,true,false,false)
-        draw.SimpleText( "Laws Of The Land", "F4s.20",h * .03,20, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText( "Laws of the land", "F4s.20",h * .03,20, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end)
 
     F4.dash.laws.scroll = BUi.Create("DScrollPanel",F4.dash.laws)
@@ -304,10 +332,10 @@ function F4:Dashboard()
 
     for k,v in pairs(DarkRP.getLaws()) do
         item = BUi.Create("DPanel",F4.dash.laws.scroll)
-        item:Stick(TOP,2)
+        item:Stick(TOP,nil,10)
         item:SetTall(F4.dash.laws:GetTall() * .1)
         item:ClearPaint():On("Paint", function(s, w, h)
-            draw.SimpleText( "⋗ " .. v, "F4s.20",h * .03,20, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText( "⋗ " .. BUi.Truncate(v,60), "F4s.20",h * .03,20, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end)
        
     end
@@ -419,8 +447,23 @@ function F4:JobsTab()
     F4.jobtab.scroll:VBarSetWide(0)
 
     function F4.jobtab.Fill()
-        F4.jobtab.scroll:Clear()
+        local sorted = {}
+        local seen = {}
+        
         for k, cat in pairs(DarkRP.getCategories().jobs) do
+            for k, v in pairs(cat.members) do 
+                if #cat.members < 1 then continue end
+                if isfunction(cat.canSee) and not cat.canSee(LocalPlayer()) then continue end
+                if F4.search:GetValue() ~= "" and not string.find(string.lower(v.name), string.lower(F4.search:GetValue())) then continue end
+                if seen[cat] then continue end
+                table.insert(sorted, cat)
+                seen[cat] = true
+            end
+        end
+        F4.jobtab.scroll:Clear()
+
+        for k, cat in pairs(sorted) do
+    
             local category = BUi.Create("DCollapsibleCategory", F4.jobtab.scroll)
             category:Stick(TOP, nil, 10, 10, 10, 0)
             category:SetHeaderHeight(50)
@@ -431,16 +474,16 @@ function F4:JobsTab()
                 surface.SetMaterial(BUi.Grad["Right"])
                 surface.SetDrawColor(cat.color)
                 surface.DrawTexturedRect(0, 0, w, h)
+                
                 surface.SetMaterial(BUi.Grad["Left"])
                 surface.SetDrawColor(cat.color)
-                surface.DrawTexturedRect(0, 0, w/2, h)
+                surface.DrawTexturedRect(0, 0, w/2, h)   
                 BUi.masks.Source()
                 draw.RoundedBox(8, 0, 0, w, h, c.tert)
                 BUi.masks.End()
                 draw.RoundedBox(8,1,1,w-2,h-2,c.sec)
-                draw.SimpleText(cat.name, "F4s.28",h * 1,h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                BUi.DrawImgur(h * .4, h* .26,h * .45, h * .45, "EcaCkha", color_white)
-                BUi.DrawImgur(w - 50, h * .09, h * .9, h * .9, category:GetExpanded() and "biMVada" or "gmYCoos", color_white)
+                draw.SimpleText(cat.name, "F4s.28",20,h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                BUi.DrawImgur(w - 50, h/2 - h * .4, h * .8, h * .8, category:GetExpanded() and "biMVada" or "gmYCoos", color_white)
             end)
             category.Header:DockMargin(0,0,0,10)
 
@@ -452,9 +495,7 @@ function F4:JobsTab()
             categorygrid:SetSpaceY(spacing)
 
             for k,v in pairs(cat.members) do
-                if (F4.search:GetValue() ~= "" and not string.find(string.lower(v.name), string.lower(F4.search:GetValue()))) then
-                    continue
-                end
+                if (F4.search:GetValue() ~= "" and not string.find(string.lower(v.name), string.lower(F4.search:GetValue()))) then continue end
                 category.ListItem = BUi.Create("DButton",categorygrid)
                 category.ListItem:DockMargin(0,10,0,0)
                 category.ListItem:SetSize((F4.frame:GetWide() - 320) / 2, 80) 
@@ -466,9 +507,10 @@ function F4:JobsTab()
                     surface.SetMaterial(BUi.Grad["Right"])
                     surface.SetDrawColor(v.color)
                     surface.DrawTexturedRect(0, 0, w, h)
+                    
                     surface.SetMaterial(BUi.Grad["Left"])
                     surface.SetDrawColor(v.color)
-                    surface.DrawTexturedRect(0, 0, w/2, h)
+                    surface.DrawTexturedRect(0, 0, w/2, h)                    
                     BUi.masks.Source()
                     draw.RoundedBox(8, 0, 0, w, h, c.tert)
                     BUi.masks.End()
@@ -526,22 +568,24 @@ function F4:JobsTab()
                         if IsValid(category.holder) then
                             category.holder:Remove()
                         end
+                        F4.EntitiesTab.Fill()
+                        F4.WepaonsTab.Fill()
                     end
 
                     category.ListItem.popout = BUi.Create("DPanel", category.holder)
                     category.ListItem.popout:SetSize(F4.jobtab:GetWide() * .35,F4.jobtab:GetTall() * .985)
                     category.ListItem.popout:SetPos(F4.jobtab:GetWide() * .8, 0)
                     category.ListItem.popout:MoveTo(F4.jobtab:GetWide() * .65, 10, 0.2)
-                    category.ListItem.popout:DockPadding(40,40,40,40)
+                    category.ListItem.popout:DockPadding(15,15,15,15)
                     
 
                     category.ListItem.popout:ClearPaint():FadeIn(.5):Background(v.color, 8):On("Paint", function(s, w, h)
                         draw.RoundedBox(8,1,1,w-2,h-2,c.bg)
 
 
-                        draw.SimpleText(v.name, "F4b.35",w / 2,h * .35, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(v.name, "F4b.35",w / 2,h * .38, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
-                        draw.SimpleText("Salary: $" .. v.salary, "F4s.20",w / 2,h * .38, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                        draw.SimpleText("Salary: $" .. v.salary, "F4s.20",w / 2,h * .42, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         
 
                     end)
@@ -553,12 +597,12 @@ function F4:JobsTab()
 
                         draw.RoundedBox(0,0,h/12,w,1,c.light)
                         draw.RoundedBoxEx(8,1,1,w-2,h/12.4,c.accent,true,true,false,false)
-                        draw.SimpleText("Description", "F4s.20",h * .015,20, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText("Description", "F4s.20",5,h/24, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                     end)
-                    description:DockPadding(5,0,0,10)
+                    description:DockPadding(0,0,0,0)
 
                     local scroll = BUi.Create("BUi.Scroll",description)
-                    scroll:Stick(FILL,nil,nil,36)
+                    scroll:Stick(FILL,nil,5,36)
                     
             
                   
@@ -665,7 +709,7 @@ function F4:JobsTab()
                     leftbutton:Text("")
                     leftbutton:SetWide(model:GetWide() * .5)
                     leftbutton:ClearPaint():On("Paint",function(s,w,h)
-                        BUi.DrawImgurRotated(h * .15,h* .5,w, h * .5,180,"Dy4zhm7",s:IsHovered() and v.color or color_white)
+                        BUi.DrawImgurRotated(h * .15,h* .45,w, h * .4,180,"Dy4zhm7",s:IsHovered() and color_white or c.light)
                     end):On("DoClick",function(s)
                         if count == 1 then 
                             count = #v.model
@@ -685,7 +729,7 @@ function F4:JobsTab()
                     rightbutton:Text("")
                     rightbutton:SetWide(model:GetWide() * .5)
                     rightbutton:ClearPaint():On("Paint",function(s,w,h)
-                        BUi.DrawImgur(h *.09,h* .3,w, h * .5,"Dy4zhm7",s:IsHovered() and v.color or color_white)
+                        BUi.DrawImgur(h *.09,h* .3,w, h * .4,"Dy4zhm7",s:IsHovered() and color_white or c.light)
                     end):On("DoClick",function(s)
                         if count == #v.model then 
                             count = 1
@@ -706,7 +750,7 @@ function F4:JobsTab()
                     end)
                     become:CircleClick()
 
-                end)
+                end)   
 
                 local model = BUi.Create("ModelImage",category.ListItem) 
                 model:Stick(LEFT, 10)
@@ -720,13 +764,303 @@ function F4:JobsTab()
             end
         end
     end
-
-    F4.search.OnChange = function()
-        F4.jobtab.Fill()
-    end
     F4.jobtab.Fill()
         
 end
+
+function F4:EntTab()
+    F4.EntitiesTab = F4:CreatePage("Entities", "EcaCkha")
+    F4.EntitiesTab.scroll = BUi.Create("BUi.Scroll", F4.EntitiesTab)
+    F4.EntitiesTab.scroll:Stick(FILL)
+    F4.EntitiesTab.scroll:VBarSetWide(0)
+
+    function F4.EntitiesTab.Fill()
+        local sorted = {}
+        local seen = {}
+        for k,cat in pairs(DarkRP.getCategories().entities) do
+            for k,v in pairs(cat.members) do 
+                if v.cmd and not F4:CheckEntity(v) then continue end
+                if F4.search:GetValue() ~= "" and not string.find(string.lower(v.name), string.lower(F4.search:GetValue())) then continue end
+                if seen[cat] then continue end
+                table.insert(sorted, cat)
+                seen[cat] = true
+            end
+        end
+
+        F4.EntitiesTab.scroll:Clear()
+        for k, cat in pairs(sorted) do
+            if #cat.members <= 0 then continue end
+            local category = BUi.Create("DCollapsibleCategory", F4.EntitiesTab.scroll)
+            category:Stick(TOP, nil, 10, 10, 10, 0)
+            category:SetHeaderHeight(50)
+            category:ClearPaint()
+            category:SetLabel("")
+            category.Header:BUi():ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
+                BUi.masks.Start()
+                surface.SetMaterial(BUi.Grad["Right"])
+                surface.SetDrawColor(cat.color)
+                surface.DrawTexturedRect(0, 0, w, h)
+                surface.SetMaterial(BUi.Grad["Left"])
+                surface.SetDrawColor(cat.color)
+                surface.DrawTexturedRect(0, 0, w / 2, h)
+                BUi.masks.Source()
+                draw.RoundedBox(8, 0, 0, w, h, c.tert)
+                BUi.masks.End()
+                draw.RoundedBox(8, 1, 1, w - 2, h - 2, c.sec)
+                draw.SimpleText(cat.name:gsub("^%l", string.upper), "F4s.28", 20, h / 2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                BUi.DrawImgur(w - 50, h/2 - h * .4, h * .8, h * .8, category:GetExpanded() and "biMVada" or "gmYCoos", color_white)
+            end)
+
+            category.Header:DockMargin(0, 0, 0, 10)
+            local categorygrid = BUi.Create("DIconLayout", category)
+            category:SetContents(categorygrid)
+            categorygrid:Dock(FILL)
+            local spacing = 10
+            categorygrid:SetSpaceX(spacing)
+            categorygrid:SetSpaceY(spacing)
+            for k, v in pairs(cat.members) do
+                if F4.search:GetValue() ~= "" and not string.find(string.lower(v.name), string.lower(F4.search:GetValue())) then continue end
+                if v.customCheck and not v.customCheck( LocalPlayer() )  then continue end
+                category.ListItem = BUi.Create("DButton", categorygrid)
+                category.ListItem:DockMargin(0, 10, 0, 0)
+                category.ListItem:SetSize((F4.frame:GetWide() - 320) / 2, 80)
+                category.ListItem:Text("")
+                category.ListItem:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
+                    BUi.masks.Start()
+                    surface.SetMaterial(BUi.Grad["Right"])
+                    surface.SetDrawColor(cat.color)
+                    surface.DrawTexturedRect(0, 0, w, h)
+                    surface.SetMaterial(BUi.Grad["Left"])
+                    surface.SetDrawColor(cat.color)
+                    surface.DrawTexturedRect(0, 0, w / 2, h)
+                    BUi.masks.Source()
+                    draw.RoundedBox(8, 0, 0, w, h, c.tert)
+                    BUi.masks.End()
+                    draw.RoundedBox(8, 1, 1, w - 2, h - 2, c.sec)
+                    draw.RoundedBox(8, h * .1, h * .1, h * .8, h * .8, cat.color)
+                    draw.RoundedBox(8, h * .1 + 1, h * .1 + 1, h * .8 - 2, h * .8 - 2, c.sec)
+                    BUi.masks.Start()
+                    surface.SetMaterial(BUi.Grad["Down"])
+                    surface.SetDrawColor(cat.color)
+                    surface.DrawTexturedRect(0, 0, w, h)
+                    BUi.masks.Source()
+                    draw.RoundedBox(4, h * .1 + 1, h * .1 + 1, h * .8 - 2, h * .8 - 2, c.sec)
+                    BUi.masks.End()
+                    draw.SimpleText(v.name, "F4s.25", h * 1, h / 3, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(DarkRP.formatMoney(v.price), "F4s.22", h * 1, h / 1.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                end):CircleClick()
+                category.ListItem:On("DoClick", function(s, w, h) 
+                    if v.cmd then
+                        LocalPlayer():ConCommand("say /" .. v.cmd)
+                    else
+                        LocalPlayer():ConCommand("say /buyammo " .. v.id)
+                    end
+                end)
+                local model = BUi.Create("ModelImage", category.ListItem)
+                model:Stick(LEFT, 10)
+                model:SetWide(category.ListItem:GetTall() * .8)
+                model:SetModel(v.model)
+            end
+        end
+    end
+    F4.EntitiesTab.Fill()
+end
+
+function F4:WepTab()
+    F4.WepaonsTab = F4:CreatePage("Weapons", "EcaCkha")
+    F4.WepaonsTab.scroll = BUi.Create("BUi.Scroll", F4.WepaonsTab)
+    F4.WepaonsTab.scroll:Stick(FILL)
+    F4.WepaonsTab.scroll:VBarSetWide(0)
+
+    local categories = {}
+
+    local function mergeCategories(target, source)
+        local existingCategories = {}
+        
+        for _, category in ipairs(target) do
+            existingCategories[category.name] = category
+        end
+
+        for _, category in ipairs(source) do
+            if not existingCategories[category.name] then
+                table.insert(target, category)
+                existingCategories[category.name] = category
+            end
+        end
+    end
+    
+    local shipments = DarkRP.getCategories().shipments
+    mergeCategories(categories, shipments)
+    
+    local weps = DarkRP.getCategories().weapons
+    mergeCategories(categories, weps)
+
+    local ammo = DarkRP.getCategories().ammo
+    mergeCategories(categories, ammo)
+
+
+    function F4.WepaonsTab.Fill()
+        local sorted = {}
+        local seen = {}
+        for k,cat in pairs(categories) do
+            for k,v in pairs(cat.members) do 
+                if v.noship and not F4:CheckWeapon(v) or not v.noship and not F4:CheckShipment(v) or not v.id and not F4:CheckAmmo(v) then continue end
+                if F4.search:GetValue() ~= "" and not string.find(string.lower(v.name), string.lower(F4.search:GetValue())) then continue end
+                if seen[cat] then continue end
+                table.insert(sorted, cat)
+                seen[cat] = true
+            end
+        end
+        
+        
+        F4.WepaonsTab.scroll:Clear()
+        for k, cat in pairs(sorted) do
+            local category = BUi.Create("DCollapsibleCategory", F4.WepaonsTab.scroll)
+            category:Stick(TOP, nil, 10, 10, 10, 0)
+            category:SetHeaderHeight(50)
+            category:ClearPaint()
+            category:SetLabel("")
+            category.Header:BUi():ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
+                BUi.masks.Start()
+                surface.SetMaterial(BUi.Grad["Right"])
+                surface.SetDrawColor(cat.color)
+                surface.DrawTexturedRect(0, 0, w, h)
+                surface.SetMaterial(BUi.Grad["Left"])
+                surface.SetDrawColor(cat.color)
+                surface.DrawTexturedRect(0, 0, w / 2, h)
+                BUi.masks.Source()
+                draw.RoundedBox(8, 0, 0, w, h, c.tert)
+                BUi.masks.End()
+                draw.RoundedBox(8, 1, 1, w - 2, h - 2, c.sec)
+                draw.SimpleText(cat.name .. "-" .. cat.categorises, "F4s.28", 20, h / 2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                BUi.DrawImgur(w - 50, h/2 - h * .4, h * .8, h * .8, category:GetExpanded() and "biMVada" or "gmYCoos", color_white)
+            end)
+
+            category.Header:DockMargin(0, 0, 0, 10)
+            local categorygrid = BUi.Create("DIconLayout", category)
+            category:SetContents(categorygrid)
+            categorygrid:Dock(FILL)
+            local spacing = 10
+            categorygrid:SetSpaceX(spacing)
+            categorygrid:SetSpaceY(spacing)
+            for k, v in pairs(cat.members) do
+                if v.noship and not F4:CheckWeapon(v) or not v.noship and not F4:CheckShipment(v) or not v.id and not F4:CheckAmmo(v) then continue end
+                if F4.search:GetValue() ~= "" and not string.find(string.lower(v.name), string.lower(F4.search:GetValue())) then continue end
+                category.ListItem = BUi.Create("DButton", categorygrid)
+                category.ListItem:DockMargin(0, 10, 0, 0)
+                category.ListItem:SetSize((F4.frame:GetWide() - 320) / 2, 80)
+                category.ListItem:Text("")
+                category.ListItem:ClearPaint():Background(c.light, 8):On("Paint", function(s, w, h)
+                    BUi.masks.Start()
+                    surface.SetMaterial(BUi.Grad["Right"])
+                    surface.SetDrawColor(cat.color)
+                    surface.DrawTexturedRect(0, 0, w, h)
+                    surface.SetMaterial(BUi.Grad["Left"])
+                    surface.SetDrawColor(cat.color)
+                    surface.DrawTexturedRect(0, 0, w / 2, h)
+                    BUi.masks.Source()
+                    draw.RoundedBox(8, 0, 0, w, h, c.tert)
+                    BUi.masks.End()
+                    draw.RoundedBox(8, 1, 1, w - 2, h - 2, c.sec)
+                    draw.RoundedBox(8, h * .1, h * .1, h * .8, h * .8, cat.color)
+                    draw.RoundedBox(8, h * .1 + 1, h * .1 + 1, h * .8 - 2, h * .8 - 2, c.sec)
+                    BUi.masks.Start()
+                    surface.SetMaterial(BUi.Grad["Down"])
+                    surface.SetDrawColor(cat.color)
+                    surface.DrawTexturedRect(0, 0, w, h)
+                    BUi.masks.Source()
+                    draw.RoundedBox(4, h * .1 + 1, h * .1 + 1, h * .8 - 2, h * .8 - 2, c.sec)
+                    BUi.masks.End()
+                    draw.SimpleText(v.name, "F4s.25", h * 1, h / 3, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(DarkRP.formatMoney(v.noship and v.pricesep or v.price), "F4s.22", h * 1, h / 1.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                end):CircleClick()
+
+                category.ListItem:On("DoClick", function(s, w, h) 
+                    if v.noship  then
+                        LocalPlayer():ConCommand("say /buy " .. v.name)
+                    else
+                        LocalPlayer():ConCommand("say /buyshipment " .. v.name)
+                    end
+                end)
+                local model = BUi.Create("ModelImage", category.ListItem)
+                model:Stick(LEFT, 10)
+                model:SetWide(category.ListItem:GetTall() * .8)
+                if v.noship then
+                    model:SetModel(v.model)
+                else
+                    model:SetModel(v.shipmodel)
+                end
+
+            end
+        end
+    end
+    F4.WepaonsTab.Fill()
+end
+
+
+function F4:CheckWeapon(ship)
+	local ply = LocalPlayer()
+	if not (ship.separate or ship.noship) then return false end
+	local cost = ship.pricesep
+	if GAMEMODE.Config.restrictbuypistol and not table.HasValue(ship.allowed, ply:Team()) then return false end
+	if ship.customCheck and not ship.customCheck(ply) then return false end
+	if not ply:canAfford(cost) then return false end
+
+
+	return true
+end
+
+function F4:CheckShipment(ship)
+	local ply = LocalPlayer()
+	if ship.noship then return false end
+	if not table.HasValue(ship.allowed, ply:Team()) then return false end
+	if ship.customCheck and not ship.customCheck(ply) then return false end
+
+	local canbuy, suppress, message, price = hook.Call("canBuyShipment", nil, ply, ship)
+	local cost = price or ship.getPrice and ship.getPrice(ply, ship.price) or ship.price
+	if not ply:canAfford(cost) then return false end
+
+	if canbuy == false then return false end
+
+	return true
+end
+
+function F4:CheckEntity(item)
+	local ply = LocalPlayer()
+	
+	if istable(item.allowed) and not table.HasValue(item.allowed, ply:Team()) then return false end
+	if item.customCheck and not item.customCheck(ply) then return false end
+	if not ply:canAfford(item.price) then return false end
+
+
+	return true
+end
+
+function F4:CheckAmmo(item)
+    local ply = LocalPlayer()
+
+    if item.customCheck and not item.customCheck(ply) then return false end
+
+    local canbuy, suppress, message, price = hook.Call("canBuyAmmo", nil, ply, item)
+    local cost = price or item.getPrice and item.getPrice(ply, item.price) or item.price
+	if not ply:canAfford(cost) then return false end
+
+
+    if canbuy == false then return false end
+
+    return true
+end
+
+hook.Add("OnPlayerChangedTeam", "beep_f4_update_tabs", function(ply)
+    if ply != LocalPlayer() then return end
+    if F4.frame:IsVisible() then
+        F4.frame:AlphaTo(0, 0.2)
+        timer.Simple(0.2,function()
+            F4.frame:SetVisible(false)
+        end)
+    end
+
+end)
 
 hook.Add( "ShowSpare2", "aw", function( ply ) 
     F4:Open()
@@ -743,3 +1077,9 @@ else
 
     end
 end
+
+concommand.Add("p", function()
+    local weps = DarkRP.getCategories().weapons
+    PrintTable(weps)
+end)
+
